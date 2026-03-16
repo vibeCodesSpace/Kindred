@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user profile in the Kindred app",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string", "description": "User's public name" },
+        "photoURL": { "type": "string", "description": "User's profile picture URL" },
+        "bio": { "type": "string", "description": "Short user biography" },
+        "interests": { "type": "array", "items": { "type": "string" }, "description": "List of user interests" },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "User role" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "displayName", "createdAt"]
+    },
+    "Community": {
+      "title": "Community",
+      "description": "A group of users with shared interests",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique community ID" },
+        "name": { "type": "string", "description": "Community name" },
+        "description": { "type": "string", "description": "Community description" },
+        "creatorId": { "type": "string", "description": "UID of the creator" },
+        "members": { "type": "array", "items": { "type": "string" }, "description": "List of member UIDs" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "creatorId", "createdAt"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "A meetup or connection event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "communityId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "attendees": { "type": "array", "items": { "type": "string" } },
+        "creatorId": { "type": "string" }
+      },
+      "required": ["title", "communityId", "startTime", "creatorId"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "senderId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User", "description": "User profiles" },
+    "/communities/{communityId}": { "schema": "Community", "description": "Community groups" },
+    "/communities/{communityId}/events/{eventId}": { "schema": "Event", "description": "Events within a community" },
+    "/communities/{communityId}/messages/{messageId}": { "schema": "Message", "description": "Chat messages for a community" }
+  }
+}

@@ -40,7 +40,7 @@ export default function Home() {
     setResearching(true);
     try {
       const result = await researchAppIdeas();
-      setResearchResult(result);
+      setResearchResult(result ?? null);
     } catch (error) {
       console.error("Research failed:", error);
     } finally {

@@ -1,17 +1,14 @@
 'use client';
 
 import { useAuth } from './AuthProvider';
-import { auth, googleProvider } from '@/lib/firebase';
-import { signInWithPopup, signOut } from 'firebase/auth';
 import { LogIn, LogOut, Users, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, signInWithGoogle, signOut } = useAuth();
 
-  const handleLogin = () => signInWithPopup(auth, googleProvider);
-  const handleLogout = () => signOut(auth);
+  const userPhoto = user?.user_metadata?.avatar_url || (user as any)?.photoURL;
 
   return (
     <nav className="border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
@@ -33,16 +30,16 @@ export default function Navbar() {
                 </Link>
                 <div className="h-8 w-px bg-zinc-200 mx-2" />
                 <button
-                  onClick={handleLogout}
+                  onClick={signOut}
                   className="flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
                 </button>
-                {user.photoURL && (
+                {userPhoto && (
                   <div className="relative w-8 h-8">
                     <Image 
-                      src={user.photoURL} 
+                      src={userPhoto} 
                       alt="Profile" 
                       fill 
                       className="rounded-full border border-zinc-200 object-cover" 
@@ -53,7 +50,7 @@ export default function Navbar() {
               </>
             ) : (
               <button
-                onClick={handleLogin}
+                onClick={signInWithGoogle}
                 className="flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors"
               >
                 <LogIn className="w-4 h-4" />

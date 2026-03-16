@@ -40,9 +40,10 @@ export default function CommunityPage() {
   const joinCommunity = async () => {
     if (!user || !id) return;
     const path = `communities/${id}`;
+    const userId = user.id || (user as any).uid;
     try {
       await updateDoc(doc(db, 'communities', id as string), {
-        members: arrayUnion(user.uid)
+        members: arrayUnion(userId)
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
@@ -54,7 +55,7 @@ export default function CommunityPage() {
     setGeneratingPrompts(true);
     try {
       const result = await getDeepConnectionPrompts([community.name, community.description]);
-      setPrompts(result);
+      setPrompts(result ?? null);
     } catch (error) {
       console.error("Failed to generate prompts:", error);
     } finally {
@@ -65,7 +66,8 @@ export default function CommunityPage() {
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-zinc-300" /></div>;
   if (!community) return <div className="text-center py-20">Circle not found.</div>;
 
-  const isMember = user && community.members?.includes(user.uid);
+  const userId = user?.id || (user as any)?.uid;
+  const isMember = userId && community.members?.includes(userId);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         if (this.state.error?.message) {
           errorDetails = JSON.parse(this.state.error.message);
         }
-      } catch (e) {
+      } catch {
         // Not a JSON error
       }
 

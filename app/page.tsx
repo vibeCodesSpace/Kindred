@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, limit, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, limit, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '@/components/AuthProvider';
 import Hero from '@/components/Hero';
 import { Users, Plus, Loader2, Search, Sparkles } from 'lucide-react';

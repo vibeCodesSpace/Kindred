@@ -1,3 +1,4 @@
+import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 export enum OperationType {
@@ -28,16 +29,16 @@ export interface FirestoreErrorInfo {
   }
 }
 
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null, user?: any) {
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null, user?: User | null) {
   const message = error instanceof Error ? error.message : String(error);
   
   const errInfo: FirestoreErrorInfo = {
     error: message,
     authInfo: {
-      userId: user?.id || user?.uid || 'Not logged in',
+      userId: user?.id || 'Not logged in',
       email: user?.email || null,
-      emailVerified: user?.email_verified || false,
-      isAnonymous: user?.is_anonymous || false,
+      emailVerified: !!user?.email_confirmed_at || false,
+      isAnonymous: false,
       tenantId: null,
       providerInfo: []
     },

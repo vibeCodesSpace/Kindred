@@ -1,3 +1,5 @@
+import { Timestamp, FieldValue } from 'firebase/firestore';
+
 export interface UserProfile {
   uid: string;
   displayName: string;
@@ -5,7 +7,7 @@ export interface UserProfile {
   bio?: string;
   interests?: string[];
   role: 'user' | 'admin';
-  createdAt: any;
+  createdAt: Timestamp | FieldValue;
 }
 
 export interface Community {
@@ -14,7 +16,7 @@ export interface Community {
   description: string;
   creatorId: string;
   members: string[];
-  createdAt: any;
+  createdAt: Timestamp | FieldValue;
 }
 
 export interface Message {
@@ -23,7 +25,7 @@ export interface Message {
   senderId: string;
   senderName: string;
   senderPhoto?: string;
-  createdAt: any;
+  createdAt: Timestamp | FieldValue;
 }
 
 export interface Event {
@@ -32,8 +34,8 @@ export interface Event {
   title: string;
   description?: string;
   location?: string;
-  startTime: any;
+  startTime: Timestamp | FieldValue;
   attendees: string[];
   creatorId: string;
-  createdAt: any;
+  createdAt: Timestamp | FieldValue;
 }

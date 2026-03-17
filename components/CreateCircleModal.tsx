@@ -22,7 +22,7 @@ export default function CreateCircleModal({ isOpen, onClose }: { isOpen: boolean
 
     setLoading(true);
     const path = 'communities';
-    const userId = user.id || (user as any).uid;
+    const userId = user.id;
     try {
       await addDoc(collection(db, 'communities'), {
         name,

@@ -8,7 +8,7 @@ import Image from 'next/image';
 export default function Navbar() {
   const { user, signInWithGoogle, signOut } = useAuth();
 
-  const userPhoto = user?.user_metadata?.avatar_url || (user as any)?.photoURL;
+  const userPhoto = user?.user_metadata?.avatar_url;
 
   return (
     <nav className="border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">

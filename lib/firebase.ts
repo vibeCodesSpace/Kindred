@@ -3,10 +3,11 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Try to load from JSON if it exists (local dev)
-let firebaseConfig: any;
+let firebaseConfig: Record<string, string | undefined>;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   firebaseConfig = require('../firebase-applet-config.json');
-} catch (e) {
+} catch {
   // Fallback to environment variables for production/Vercel
   firebaseConfig = {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,

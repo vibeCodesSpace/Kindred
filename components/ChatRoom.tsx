@@ -44,9 +44,9 @@ export default function ChatRoom({ communityId }: { communityId: string }) {
     const text = newMessage;
     setNewMessage('');
     const path = `communities/${communityId}/messages`;
-    const userId = user.id || (user as any).uid;
-    const userName = user.user_metadata?.full_name || (user as any).displayName || 'Anonymous';
-    const userPhoto = user.user_metadata?.avatar_url || (user as any).photoURL || '';
+    const userId = user.id;
+    const userName = user.user_metadata?.full_name || 'Anonymous';
+    const userPhoto = user.user_metadata?.avatar_url || '';
 
     try {
       await addDoc(collection(db, 'communities', communityId, 'messages'), {
@@ -63,7 +63,7 @@ export default function ChatRoom({ communityId }: { communityId: string }) {
 
   if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-zinc-300" /></div>;
 
-  const userId = user?.id || (user as any)?.uid;
+  const userId = user?.id;
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">

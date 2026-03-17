@@ -42,7 +42,7 @@ export default function CommunityPage() {
   const joinCommunity = async () => {
     if (!user || !id) return;
     const path = `communities/${id}`;
-    const userId = user.id || (user as any).uid;
+    const userId = user.id;
     try {
       await updateDoc(doc(db, 'communities', id as string), {
         members: arrayUnion(userId)
@@ -71,7 +71,7 @@ export default function CommunityPage() {
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-zinc-300" /></div>;
   if (!community) return <div className="text-center py-20">Circle not found.</div>;
 
-  const userId = user?.id || (user as any)?.uid;
+  const userId = user?.id;
   const isMember = userId && community.members?.includes(userId);
 
   return (

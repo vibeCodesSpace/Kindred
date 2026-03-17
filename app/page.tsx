@@ -9,10 +9,13 @@ import { Users, Plus, Loader2, Search, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { researchAppIdeas } from '@/lib/research';
 import CreateCircleModal from '@/components/CreateCircleModal';
+import { toast } from 'sonner';
+import { handleFirestoreError, OperationType } from '@/lib/error-handler';
+import { Community } from '@/lib/types';
 
 export default function Home() {
   const { user } = useAuth();
-  const [communities, setCommunities] = useState<any[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [researching, setResearching] = useState(false);
   const [researchResult, setResearchResult] = useState<string | null>(null);
@@ -27,10 +30,10 @@ export default function Home() {
 
     const q = query(collection(db, 'communities'), limit(10));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setCommunities(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setCommunities(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Community)));
       setLoading(false);
     }, (err) => {
-      console.error("Firestore error:", err);
+      handleFirestoreError(err, OperationType.LIST, 'communities', user);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -41,8 +44,10 @@ export default function Home() {
     try {
       const result = await researchAppIdeas();
       setResearchResult(result ?? null);
+      toast.success('AI Research completed!');
     } catch (error) {
       console.error("Research failed:", error);
+      toast.error('AI Research failed. Please try again.');
     } finally {
       setResearching(false);
     }

@@ -8,10 +8,11 @@ import { Send, Loader2, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';
 import { handleFirestoreError, OperationType } from '@/lib/error-handler';
+import { Message } from '@/lib/types';
 
 export default function ChatRoom({ communityId }: { communityId: string }) {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,11 +27,11 @@ export default function ChatRoom({ communityId }: { communityId: string }) {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message)));
       setLoading(false);
       setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, path);
+      handleFirestoreError(error, OperationType.LIST, path, user);
     });
 
     return () => unsubscribe();
@@ -56,7 +57,7 @@ export default function ChatRoom({ communityId }: { communityId: string }) {
         createdAt: serverTimestamp()
       });
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, path);
+      handleFirestoreError(error, OperationType.CREATE, path, user);
     }
   };
 

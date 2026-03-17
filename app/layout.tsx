@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Kindred | Reconnecting Humanity',
@@ -17,6 +18,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           <AuthProvider>
             <Navbar />
             {children}
+            <Toaster position="top-center" richColors />
           </AuthProvider>
         </ErrorBoundary>
       </body>

@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
@@ -26,22 +28,35 @@ export interface FirestoreErrorInfo {
   }
 }
 
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  // We can't easily access the auth state here without passing it in, 
-  // but we can at least report the error message and operation.
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null, user?: any) {
+  const message = error instanceof Error ? error.message : String(error);
+  
   const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
+    error: message,
     authInfo: {
-      userId: 'Check console for auth state', // Simplified for now
-      email: null,
-      emailVerified: false,
-      isAnonymous: false,
+      userId: user?.id || user?.uid || 'Not logged in',
+      email: user?.email || null,
+      emailVerified: user?.email_verified || false,
+      isAnonymous: user?.is_anonymous || false,
       tenantId: null,
       providerInfo: []
     },
     operationType,
     path
   };
+
   console.error('Firestore Error: ', JSON.stringify(errInfo));
+
+  if (message.includes('permission-denied') || message.includes('Missing or insufficient permissions')) {
+    toast.error('Access Denied', {
+      description: 'You do not have permission to perform this action. Please sign in or check your access level.',
+    });
+  } else {
+    toast.error('Database Error', {
+      description: 'Something went wrong while accessing the database. Please try again later.',
+    });
+  }
+
+  // Rethrow for ErrorBoundary if it's a critical failure
   throw new Error(JSON.stringify(errInfo));
 }

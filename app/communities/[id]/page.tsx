@@ -9,13 +9,15 @@ import ChatRoom from '@/components/ChatRoom';
 import { Users, Sparkles, Loader2, MessageSquare, Calendar, Info } from 'lucide-react';
 import { getDeepConnectionPrompts } from '@/lib/gemini';
 import ReactMarkdown from 'react-markdown';
+import { toast } from 'sonner';
+import { Community } from '@/lib/types';
 
 import { handleFirestoreError, OperationType } from '@/lib/error-handler';
 
 export default function CommunityPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [community, setCommunity] = useState<any>(null);
+  const [community, setCommunity] = useState<Community | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingPrompts, setGeneratingPrompts] = useState(false);
   const [prompts, setPrompts] = useState<string | null>(null);
@@ -28,11 +30,11 @@ export default function CommunityPage() {
     const path = `communities/${id}`;
     const unsubscribe = onSnapshot(doc(db, 'communities', id as string), (doc) => {
       if (doc.exists()) {
-        setCommunity({ id: doc.id, ...doc.data() });
+        setCommunity({ id: doc.id, ...doc.data() } as Community);
       }
       setLoading(false);
     }, (error) => {
-      handleFirestoreError(error, OperationType.GET, path);
+      handleFirestoreError(error, OperationType.GET, path, user);
     });
     return () => unsubscribe();
   }, [id, user]);
@@ -45,8 +47,9 @@ export default function CommunityPage() {
       await updateDoc(doc(db, 'communities', id as string), {
         members: arrayUnion(userId)
       });
+      toast.success('Welcome to the circle!');
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, path);
+      handleFirestoreError(error, OperationType.UPDATE, path, user);
     }
   };
 
@@ -56,8 +59,10 @@ export default function CommunityPage() {
     try {
       const result = await getDeepConnectionPrompts([community.name, community.description]);
       setPrompts(result ?? null);
+      toast.success('New icebreakers generated!');
     } catch (error) {
       console.error("Failed to generate prompts:", error);
+      toast.error('Failed to generate prompts');
     } finally {
       setGeneratingPrompts(false);
     }

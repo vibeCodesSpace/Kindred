@@ -6,6 +6,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '@/components/AuthProvider';
 import { X, Loader2 } from 'lucide-react';
 import { handleFirestoreError, OperationType } from '@/lib/error-handler';
+import { toast } from 'sonner';
 
 export default function CreateCircleModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { user } = useAuth();
@@ -30,9 +31,12 @@ export default function CreateCircleModal({ isOpen, onClose }: { isOpen: boolean
         members: [userId],
         createdAt: serverTimestamp()
       });
+      toast.success('Circle created successfully!');
       onClose();
+      setName('');
+      setDescription('');
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, path);
+      handleFirestoreError(error, OperationType.CREATE, path, user);
     } finally {
       setLoading(false);
     }

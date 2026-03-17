@@ -5,12 +5,13 @@ import { createClient } from '@/lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { UserProfile } from '@/lib/types';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  profile: any | null;
+  profile: UserProfile | null;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -28,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const signInWithGoogle = async () => {
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Sync with Firestore for community features
         const userDoc = await getDoc(doc(db, 'users', session.user.id));
         if (!userDoc.exists()) {
-          const newProfile = {
+          const newProfile: UserProfile = {
             uid: session.user.id,
             displayName: session.user.user_metadata.full_name || 'Anonymous',
             photoURL: session.user.user_metadata.avatar_url || '',
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await setDoc(doc(db, 'users', session.user.id), newProfile);
           setProfile(newProfile);
         } else {
-          setProfile(userDoc.data());
+          setProfile(userDoc.data() as UserProfile);
         }
       } else {
         setProfile(null);

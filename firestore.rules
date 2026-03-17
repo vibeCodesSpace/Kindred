@@ -48,6 +48,14 @@ service cloud.firestore {
              data.keys().hasOnly(['text', 'senderId', 'senderName', 'senderPhoto', 'createdAt']);
     }
 
+    function isValidEvent(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.communityId is string &&
+             data.creatorId == request.auth.uid &&
+             data.keys().hasAll(['title', 'communityId', 'startTime', 'creatorId']) &&
+             data.keys().hasOnly(['title', 'description', 'location', 'startTime', 'creatorId', 'communityId', 'attendees', 'createdAt']);
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -68,8 +76,9 @@ service cloud.firestore {
 
     match /communities/{communityId}/events/{eventId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidEvent(request.resource.data) && request.resource.data.communityId == communityId;
+      allow update: if isAuthenticated() && isValidEvent(request.resource.data) && 
+                    (resource.data.creatorId == request.auth.uid || request.auth.uid in get(/databases/$(database)/documents/communities/$(communityId)).data.members || isAdmin());
     }
 
     match /communities/{communityId}/messages/{messageId} {

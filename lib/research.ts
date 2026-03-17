@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-export async function researchAppIdeas() {
+export async function researchAppIdeas(): Promise<string | null> {
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey) {
     console.warn('NEXT_PUBLIC_GEMINI_API_KEY is missing');
@@ -14,5 +14,5 @@ export async function researchAppIdeas() {
     },
   });
 
-  return response.text;
+  return response.text ?? null;
 }

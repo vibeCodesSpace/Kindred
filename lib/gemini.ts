@@ -1,6 +1,11 @@
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+if (!apiKey) {
+  console.warn('NEXT_PUBLIC_GEMINI_API_KEY is missing');
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
 
 export async function getDeepConnectionPrompts(interests: string[]) {
   const response = await ai.models.generateContent({
